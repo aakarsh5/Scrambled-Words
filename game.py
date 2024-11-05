@@ -1,6 +1,7 @@
 import random
 import time
 
+# Word class to handle each word's original and scrambled form
 class Word:
     def __init__(self, original):
         self.original = original
@@ -15,8 +16,9 @@ class Word:
         return answer.lower() == self.original.lower()
 
 
+# Level class to manage the words, timer, and attempts in each level
 class Level:
-    def __init__(self, word_list, level_time=5):
+    def __init__(self, word_list, level_time=30):
         self.words = [Word(word) for word in word_list]
         self.level_time = level_time  # Time limit per level in seconds
         self.start_time = None
@@ -44,6 +46,8 @@ class Level:
             return False
 
     def is_time_up(self):
+        if self.start_time is None:
+            return False
         elapsed_time = time.time() - self.start_time
         return elapsed_time >= self.level_time
 
@@ -85,7 +89,11 @@ class Game:
         level.start_level()
         print(f"\nStarting Level {self.current_level_index + 1}!")
 
-        while not level.is_time_up():
+        while True:
+            if level.is_time_up():
+                print("Time's up for this level!")
+                break
+
             scrambled_word = level.get_current_word()
             print(f"Scrambled Word: {scrambled_word}")
             answer = input("Your guess: ")
@@ -98,11 +106,7 @@ class Game:
                     break
             else:
                 print("Wrong! Try again.")
-                level.wrong_attempts += 1
                 self.player.increment_wrong_attempts()
-
-            if level.is_time_up():
-                print("Time's up for this level!")
 
         print(f"Level {self.current_level_index + 1} complete. Moving to the next level.")
 
